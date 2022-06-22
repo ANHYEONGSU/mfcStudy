@@ -6,10 +6,12 @@
 #include "gPrj.h"
 #include "gPrjDlg.h"
 #include "afxdialogex.h"
+#include <iostream>
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console") // Consol 출력하는 코드
 #endif
 
 
@@ -65,8 +67,8 @@ BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CgPrjDlg::OnBnClickedButton1)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BTN_TEST, &CgPrjDlg::OnBnClickedBtnTest)
 END_MESSAGE_MAP()
 
 
@@ -101,10 +103,31 @@ BOOL CgPrjDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
-	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	MoveWindow(0, 0, 1280, 800);  // CWnd의 위치와 넓이를 변경한다.
+								  // int x      = 왼쪽의 새 위치를 지정한다
+								  // int y      = 위쪽의 새 위치를 지정한다
+								  // int nWidth = 너비를 지정한다
+								  // int Height = 높이를 지정한다
+
 	m_pDlgImage = new CDlgImage;
 	m_pDlgImage->Create(IDD_DLGIMAGE, this);
 	m_pDlgImage->ShowWindow(SW_SHOW);
+	m_pDlgImage->MoveWindow(0, 0, 640, 480); // CWnd의 위치와 넓이를 변경한다.
+											 // int x      = 왼쪽의 새 위치를 지정한다
+											 // int y      = 위쪽의 새 위치를 지정한다
+											 // int nWidth = 너비를 지정한다
+											 // int Height = 높이를 지정한다
+
+
+	m_pDiglmageResult = new CDlgImage;
+	m_pDiglmageResult->Create(IDD_DLGIMAGE, this);
+	m_pDiglmageResult->ShowWindow(SW_SHOW);
+	m_pDiglmageResult->ShowWindow(SW_SHOW);
+	m_pDiglmageResult->MoveWindow(640, 0, 640, 480); // CWnd의 위치와 넓이를 변경한다.
+													 // int x      = 왼쪽의 새 위치를 지정한다
+													 // int y      = 위쪽의 새 위치를 지정한다
+													 // int nWidth = 너비를 지정한다
+													 // int Height = 높이를 지정한다
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -122,9 +145,6 @@ void CgPrjDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// 대화 상자에 최소화 단추를 추가할 경우 아이콘을 그리려면
-//  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 응용 프로그램의 경우에는
-//  프레임워크에서 이 작업을 자동으로 수행합니다.
 
 void CgPrjDlg::OnPaint()
 {
@@ -158,24 +178,53 @@ HCURSOR CgPrjDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-void CgPrjDlg::OnBnClickedButton1()
-{
-	m_pDlgImage->ShowWindow(SW_SHOW);
-}
-
-
 void CgPrjDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
 	delete m_pDlgImage;
 }
-#include <iostream>
-using namespace std;
+
 
 void CgPrjDlg::callFunc(int n)
 {
 //	int nDate = n;
 	cout << n << endl;
+}
+
+
+void CgPrjDlg::OnBnClickedBtnTest()
+{
+	unsigned char* fm = (unsigned char*)m_pDlgImage->m_image.GetBits();	  // unsigned = 0 ~ 255 (양수만 표시 가능, 주소값의 경우 음수가 존재하지 않음 )
+															              // GetBits  = 지정된 픽셀의 실제 비트 값에 대한 포인터를 검색. 
+															              //            ( m_image의 첫번째 포인터를 가지고 옴 )
+	int nWidth = m_pDlgImage->m_image.GetWidth();
+	int nHeight = m_pDlgImage->m_image.GetHeight();
+	int nPitch = m_pDlgImage->m_image.GetPitch();
+
+	for (int k = 0; k < 100; k++){    // 화면에 100개의 랜덤 점 표시.
+		int x = rand() % nWidth;      // rand(); = 랜덤한 숫자를 반환한다 . 반환값은 ( 0 ~ 32767 ) 사이의 값
+		int y = rand() % nHeight;
+		fm[y * nPitch + x] = 0;
+	}
+
+	int nSum = 0;
+	for (int j = 0; j < nHeight; j++) {     // 점 갯수 카운팅과 각점의 좌표값 표시하기.
+		for (int i = 0; i < nWidth; i++) {
+			if (fm[j*nPitch + i] == 0) {
+				cout << "No." << nSum << " , " << " " << "x : " << i << " , " << "y : " << j << endl;
+				nSum++;
+			}
+		}
+	}
+
+
+	/*memset(fm, 0, 640 * 480); */  // memset 함수는 메모리의 내용(값)을 원하는 크기만큼 특정 값으로 세팅할 수 있는 함수
+							    // memory + setting 메모리를 (특정 값으로) 세팅
+								// void *ptr    = 주소를 가리키고있는 포인터가 위치하는 자리
+								// int value    = 메모리에 셋팅하고자 하는 값을 넣으면 됌
+								// size_t _Size = 길이 ( 바이트 단위로써 메모리의 크기 한조각 단위의 길이를 말함 )
+
+	m_pDlgImage->Invalidate();  // Invalidate = CWnd의 전체 클라이언트 영역을 무효화 시키는것
+								//              화면의 배경색을 포함해서 재출력
 }
