@@ -13,7 +13,8 @@ public:
 	
 	CImage m_image;        // CImage 클래스를 m_image라는 변수로 선언;
 	CWnd* m_pParent;
-
+	int m_nDataCount = 0;
+	CPoint m_ptData[100];
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -27,7 +28,11 @@ protected:
 public:
 	afx_msg void OnBnClickedBtnUpParent();
 	virtual BOOL OnInitDialog();
-	afx_msg void OnPaint();
 
+private:
 	void InitImage();
+	void drawDate(CDC* pDC);
+
+public:
+	afx_msg void OnPaint();
 };

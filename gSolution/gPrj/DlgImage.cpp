@@ -65,23 +65,6 @@ BOOL CDlgImage::OnInitDialog() // 애플리케이션이 입력 포커스를 대화 상자의 컨트�
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
-
-void CDlgImage::OnPaint() // CPaintDC 클래스의 디바이스 컨텍스트 개체를 만들어 메시지에 응답하고 뷰의 OnDraw 멤버 함수를 호출한다.
-                          // 디바이스 컨텍스트 =  디스플레이 또는 프린터와 같은 디바이스의 그리기 특성에 대한 정보를 포함하는 Windows 데이터 구조
-	                      // 클래스마법사 > 메시지 > WM_PAINT 추가
-{
-	CPaintDC dc(this); // device context for painting
-					   // 클라이언트 영역에 출력할 때 WM_PAINT 메시지 핸들러에서만 사용.
-
-
-	if (m_image) {
-		m_image.Draw(dc, 0, 0);  // 원본 디바이스 컨텍스트에서 현재 디바이스 컨텍스트로 비트맵을 복사합니다.
-							     // hDestDC = 대상 디바이스 컨텍스트에 대한 핸들
-								 // xDest   = 대상 사각형의 왼쪽 위 모서리에 있는 x 좌표
-								 // yDest   = 대상 사각형의 왼쪽 위 모서리에 있는 y 좌표
-	}
-}
-
 void CDlgImage::InitImage() // 이미지 그리기.
 {
 	int nWidth = 640;
@@ -110,4 +93,35 @@ void CDlgImage::InitImage() // 이미지 그리기.
 											  // 첫번째 인자 void *ptr  = 주소를 가리키고있는 포인터가 위치하는 자리
 											  // 두번째 인자 value      = 메모리에 셋팅하고자 하는 값을 넣으면 됌
 											  // 세번째 인자 size_t num = 길이 ( 바이트 단위로써 메모리의 크기 한조각 단위의 길이를 말함 )
+}
+
+void CDlgImage::OnPaint() // CPaintDC 클래스의 디바이스 컨텍스트 개체를 만들어 메시지에 응답하고 뷰의 OnDraw 멤버 함수를 호출한다.
+                          // 디바이스 컨텍스트 =  디스플레이 또는 프린터와 같은 디바이스의 그리기 특성에 대한 정보를 포함하는 Windows 데이터 구조
+	                      // 클래스마법사 > 메시지 > WM_PAINT 추가
+{
+	CPaintDC dc(this); // device context for painting
+					   // 클라이언트 영역에 출력할 때 WM_PAINT 메시지 핸들러에서만 사용.
+
+
+	if (m_image) {
+		m_image.Draw(dc, 0, 0);  // 원본 디바이스 컨텍스트에서 현재 디바이스 컨텍스트로 비트맵을 복사합니다.
+							     // hDestDC = 대상 디바이스 컨텍스트에 대한 핸들
+								 // xDest   = 대상 사각형의 왼쪽 위 모서리에 있는 x 좌표
+								 // yDest   = 대상 사각형의 왼쪽 위 모서리에 있는 y 좌표
+	}
+	drawDate(&dc);
+}
+
+void CDlgImage::drawDate(CDC* pDC)
+{
+	CRect rect;
+	CPen pen;
+	pen.CreatePen(PS_SOLID, 5, RGB(0xff, 0, 0));
+	CPen* pOldPen = pDC->SelectObject(&pen);
+	for (int i = 0; i < m_nDataCount; i++) {
+		rect.SetRect(m_ptData[i], m_ptData[i]);
+		rect.InflateRect(2, 2);
+		pDC->Ellipse(rect);
+	}
+	pDC->SelectObject(pOldPen);
 }

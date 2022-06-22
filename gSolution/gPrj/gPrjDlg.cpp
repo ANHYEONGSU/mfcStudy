@@ -119,11 +119,11 @@ BOOL CgPrjDlg::OnInitDialog()
 											 // int Height = 높이를 지정한다
 
 
-	m_pDiglmageResult = new CDlgImage;
-	m_pDiglmageResult->Create(IDD_DLGIMAGE, this);
-	m_pDiglmageResult->ShowWindow(SW_SHOW);
-	m_pDiglmageResult->ShowWindow(SW_SHOW);
-	m_pDiglmageResult->MoveWindow(640, 0, 640, 480); // CWnd의 위치와 넓이를 변경한다.
+	m_pDlglmgResult = new CDlgImage;
+	m_pDlglmgResult->Create(IDD_DLGIMAGE, this);
+	m_pDlglmgResult->ShowWindow(SW_SHOW);
+	m_pDlglmgResult->ShowWindow(SW_SHOW);
+	m_pDlglmgResult->MoveWindow(640, 0, 640, 480); // CWnd의 위치와 넓이를 변경한다.
 													 // int x      = 왼쪽의 새 위치를 지정한다
 													 // int y      = 위쪽의 새 위치를 지정한다
 													 // int nWidth = 너비를 지정한다
@@ -182,7 +182,8 @@ void CgPrjDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	delete m_pDlgImage;
+	if(m_pDlgImage)		delete m_pDlgImage;
+	if(m_pDlglmgResult) delete m_pDlglmgResult;
 }
 
 
@@ -202,29 +203,39 @@ void CgPrjDlg::OnBnClickedBtnTest()
 	int nHeight = m_pDlgImage->m_image.GetHeight();
 	int nPitch = m_pDlgImage->m_image.GetPitch();
 
+	memset(fm, 0xff, nWidth * nHeight);   // memset 함수는 메모리의 내용(값)을 원하는 크기만큼 특정 값으로 세팅할 수 있는 함수
+									   // memory + setting 메모리를 (특정 값으로) 세팅
+									   // void *ptr    = 주소를 가리키고있는 포인터가 위치하는 자리
+									   // int value    = 메모리에 셋팅하고자 하는 값을 넣으면 됌
+									   // size_t _Size = 길이 ( 바이트 단위로써 메모리의 크기 한조각 단위의 길이를 말함 )
+	
+
 	for (int k = 0; k < 100; k++){    // 화면에 100개의 랜덤 점 표시.
 		int x = rand() % nWidth;      // rand(); = 랜덤한 숫자를 반환한다 . 반환값은 ( 0 ~ 32767 ) 사이의 값
 		int y = rand() % nHeight;
 		fm[y * nPitch + x] = 0;
 	}
 
-	int nSum = 0;
+	//int nSum = 0;
+	int nIndex = 0;
 	for (int j = 0; j < nHeight; j++) {     // 점 갯수 카운팅과 각점의 좌표값 표시하기.
 		for (int i = 0; i < nWidth; i++) {
 			if (fm[j*nPitch + i] == 0) {
-				cout << "No." << nSum << " , " << " " << "x : " << i << " , " << "y : " << j << endl;
-				nSum++;
+				if (m_pDlglmgResult->m_nDataCount < 100) {
+					m_pDlglmgResult->m_ptData[nIndex].x = i;
+					m_pDlglmgResult->m_ptData[nIndex].y = j;
+					m_pDlglmgResult->m_nDataCount = ++nIndex;
+				}
+				//cout << "No." << nSum << " , " << " " << "x : " << i << " , " << "y : " << j << endl;
+				//nSum++;
 			}
 		}
 	}
 
 
-	/*memset(fm, 0, 640 * 480); */  // memset 함수는 메모리의 내용(값)을 원하는 크기만큼 특정 값으로 세팅할 수 있는 함수
-							    // memory + setting 메모리를 (특정 값으로) 세팅
-								// void *ptr    = 주소를 가리키고있는 포인터가 위치하는 자리
-								// int value    = 메모리에 셋팅하고자 하는 값을 넣으면 됌
-								// size_t _Size = 길이 ( 바이트 단위로써 메모리의 크기 한조각 단위의 길이를 말함 )
+	
 
 	m_pDlgImage->Invalidate();  // Invalidate = CWnd의 전체 클라이언트 영역을 무효화 시키는것
 								//              화면의 배경색을 포함해서 재출력
+	m_pDlglmgResult->Invalidate();
 }
