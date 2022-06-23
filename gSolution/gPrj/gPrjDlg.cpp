@@ -1,5 +1,5 @@
-
-// gPrjDlg.cpp : ±¸Çö ÆÄÀÏ
+ï»¿
+// gPrjDlg.cpp : êµ¬í˜„ íŒŒì¼
 //
 
 #include "stdafx.h"
@@ -7,30 +7,32 @@
 #include "gPrjDlg.h"
 #include "afxdialogex.h"
 #include <iostream>
-using namespace std; // std:: ÀÛ¼ºÀ» »ı·«ÇÏ°Ô ÇØÁØ´Ù
+#include "Process.h"
+#include <chrono>
+using namespace std; // std:: ì‘ì„±ì„ ìƒëµí•˜ê²Œ í•´ì¤€ë‹¤
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console") // Consol Ã¢À» Ãâ·ÂÇÏ´Â ÄÚµå
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console") // Consol ì°½ì„ ì¶œë ¥í•˜ëŠ” ì½”ë“œ
 #endif
 
 
-// ÀÀ¿ë ÇÁ·Î±×·¥ Á¤º¸¿¡ »ç¿ëµÇ´Â CAboutDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// ì‘ìš© í”„ë¡œê·¸ë¨ ì •ë³´ì— ì‚¬ìš©ë˜ëŠ” CAboutDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 
 class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
 
-// ´ëÈ­ »óÀÚ µ¥ÀÌÅÍÀÔ´Ï´Ù.
+// ëŒ€í™” ìƒì ë°ì´í„°ì…ë‹ˆë‹¤.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Áö¿øÀÔ´Ï´Ù.
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ì§€ì›ì…ë‹ˆë‹¤.
 
-// ±¸ÇöÀÔ´Ï´Ù.
+// êµ¬í˜„ì…ë‹ˆë‹¤.
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -48,7 +50,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CgPrjDlg ´ëÈ­ »óÀÚ
+// CgPrjDlg ëŒ€í™” ìƒì
 
 
 
@@ -69,18 +71,19 @@ BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BTN_TEST, &CgPrjDlg::OnBnClickedBtnTest)
+	ON_BN_CLICKED(IDC_BTN_PROCESS, &CgPrjDlg::OnBnClickedBtnProcess)
 END_MESSAGE_MAP()
 
 
-// CgPrjDlg ¸Ş½ÃÁö Ã³¸®±â
+// CgPrjDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°
 
 BOOL CgPrjDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// ½Ã½ºÅÛ ¸Ş´º¿¡ "Á¤º¸..." ¸Ş´º Ç×¸ñÀ» Ãß°¡ÇÕ´Ï´Ù.
+	// ì‹œìŠ¤í…œ ë©”ë‰´ì— "ì •ë³´..." ë©”ë‰´ í•­ëª©ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 
-	// IDM_ABOUTBOX´Â ½Ã½ºÅÛ ¸í·É ¹üÀ§¿¡ ÀÖ¾î¾ß ÇÕ´Ï´Ù.
+	// IDM_ABOUTBOXëŠ” ì‹œìŠ¤í…œ ëª…ë ¹ ë²”ìœ„ì— ìˆì–´ì•¼ í•©ë‹ˆë‹¤.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -98,40 +101,40 @@ BOOL CgPrjDlg::OnInitDialog()
 		}
 	}
 
-	// ÀÌ ´ëÈ­ »óÀÚÀÇ ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.  ÀÀ¿ë ÇÁ·Î±×·¥ÀÇ ÁÖ Ã¢ÀÌ ´ëÈ­ »óÀÚ°¡ ¾Æ´Ò °æ¿ì¿¡´Â
-	//  ÇÁ·¹ÀÓ¿öÅ©°¡ ÀÌ ÀÛ¾÷À» ÀÚµ¿À¸·Î ¼öÇàÇÕ´Ï´Ù.
+	// ì´ ëŒ€í™” ìƒìì˜ ì•„ì´ì½˜ì„ ì„¤ì •í•©ë‹ˆë‹¤.  ì‘ìš© í”„ë¡œê·¸ë¨ì˜ ì£¼ ì°½ì´ ëŒ€í™” ìƒìê°€ ì•„ë‹ ê²½ìš°ì—ëŠ”
+	//  í”„ë ˆì„ì›Œí¬ê°€ ì´ ì‘ì—…ì„ ìë™ìœ¼ë¡œ ìˆ˜í–‰í•©ë‹ˆë‹¤.
 
-	SetIcon(m_hIcon, TRUE);			// Å« ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
-	SetIcon(m_hIcon, FALSE);		// ÀÛÀº ¾ÆÀÌÄÜÀ» ¼³Á¤ÇÕ´Ï´Ù.
+	SetIcon(m_hIcon, TRUE);			// í° ì•„ì´ì½˜ì„ ì„¤ì •í•©ë‹ˆë‹¤.
+	SetIcon(m_hIcon, FALSE);		// ì‘ì€ ì•„ì´ì½˜ì„ ì„¤ì •í•©ë‹ˆë‹¤.
 
-	MoveWindow(0, 0, 1280, 800);  // CWndÀÇ À§Ä¡¿Í ³ĞÀÌ¸¦ º¯°æÇÑ´Ù.
-								  // int x      = ¿ŞÂÊÀÇ »õ À§Ä¡¸¦ ÁöÁ¤ÇÑ´Ù
-								  // int y      = À§ÂÊÀÇ »õ À§Ä¡¸¦ ÁöÁ¤ÇÑ´Ù
-								  // int nWidth = ³Êºñ¸¦ ÁöÁ¤ÇÑ´Ù
-								  // int Height = ³ôÀÌ¸¦ ÁöÁ¤ÇÑ´Ù
+	MoveWindow(0, 0, 1280, 800);  // CWndì˜ ìœ„ì¹˜ì™€ ë„“ì´ë¥¼ ë³€ê²½í•œë‹¤.
+								  // int x      = ì™¼ìª½ì˜ ìƒˆ ìœ„ì¹˜ë¥¼ ì§€ì •í•œë‹¤
+								  // int y      = ìœ„ìª½ì˜ ìƒˆ ìœ„ì¹˜ë¥¼ ì§€ì •í•œë‹¤
+								  // int nWidth = ë„ˆë¹„ë¥¼ ì§€ì •í•œë‹¤
+								  // int Height = ë†’ì´ë¥¼ ì§€ì •í•œë‹¤
 
-	m_pDlgImage = new CDlgImage;             // new¸¦ »ç¿ëÇØ¼­ °´Ã¼¸¦ »ı¼º
-											 // new¸¦ »ç¿ëÇÏ¸é Ç×»ó delete ¸¦ ÇØÁÖ¾î¾ß ¸Ş¸ğ¸® ¸¯ÀÌ ¹ß»ıÇÏÁö ¾Ê´Â´Ù
+	m_pDlgImage = new CDlgImage;             // newë¥¼ ì‚¬ìš©í•´ì„œ ê°ì²´ë¥¼ ìƒì„±
+											 // newë¥¼ ì‚¬ìš©í•˜ë©´ í•­ìƒ delete ë¥¼ í•´ì£¼ì–´ì•¼ ë©”ëª¨ë¦¬ ë¦­ì´ ë°œìƒí•˜ì§€ ì•ŠëŠ”ë‹¤
 
-	m_pDlgImage->Create(IDD_DLGIMAGE, this); // Create() ÇÔ¼ö¸¦ »ç¿ëÇØ¼­ À©µµ¿ì¸¦ »ı¼º
-											 // Ã¹¹øÂ° ÀÎÀÚ°ª = ID 
-											 // µÎ¹øÂ° ÀÎÀÚ°ª = À©µµ¿ì (this = ÇöÀçÀÇ ´ÙÀÌ¾ó·Î±× À©µµ¿ì )
+	m_pDlgImage->Create(IDD_DLGIMAGE, this); // Create() í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•´ì„œ ìœˆë„ìš°ë¥¼ ìƒì„±
+											 // ì²«ë²ˆì§¸ ì¸ìê°’ = ID 
+											 // ë‘ë²ˆì§¸ ì¸ìê°’ = ìœˆë„ìš° (this = í˜„ì¬ì˜ ë‹¤ì´ì–¼ë¡œê·¸ ìœˆë„ìš° )
 
-	m_pDlgImage->ShowWindow(SW_SHOW);        // ShowWindow() = ÁöÁ¤µÈ À©µµ¿ìÀÇ Ç¥½Ã »óÅÂ¸¦ ¼³Á¤ÇÑ´Ù
-	                                         // SW_SHOW      = À©µµ¿ì¸¦ º¸ÅëÅ©±â·Î º¸¿©ÁØ´Ù
+	m_pDlgImage->ShowWindow(SW_SHOW);        // ShowWindow() = ì§€ì •ëœ ìœˆë„ìš°ì˜ í‘œì‹œ ìƒíƒœë¥¼ ì„¤ì •í•œë‹¤
+	                                         // SW_SHOW      = ìœˆë„ìš°ë¥¼ ë³´í†µí¬ê¸°ë¡œ ë³´ì—¬ì¤€ë‹¤
 
-	m_pDlgImage->MoveWindow(0, 0, 640, 480); // CWndÀÇ À§Ä¡¿Í ³ĞÀÌ¸¦ º¯°æÇÑ´Ù.
-											 // int x      = ¿ŞÂÊÀÇ »õ À§Ä¡¸¦ ÁöÁ¤ÇÑ´Ù
-											 // int y      = À§ÂÊÀÇ »õ À§Ä¡¸¦ ÁöÁ¤ÇÑ´Ù
-											 // int nWidth = ³Êºñ¸¦ ÁöÁ¤ÇÑ´Ù
-											 // int Height = ³ôÀÌ¸¦ ÁöÁ¤ÇÑ´Ù
+	m_pDlgImage->MoveWindow(0, 0, 640, 480); // CWndì˜ ìœ„ì¹˜ì™€ ë„“ì´ë¥¼ ë³€ê²½í•œë‹¤.
+											 // int x      = ì™¼ìª½ì˜ ìƒˆ ìœ„ì¹˜ë¥¼ ì§€ì •í•œë‹¤
+											 // int y      = ìœ„ìª½ì˜ ìƒˆ ìœ„ì¹˜ë¥¼ ì§€ì •í•œë‹¤
+											 // int nWidth = ë„ˆë¹„ë¥¼ ì§€ì •í•œë‹¤
+											 // int Height = ë†’ì´ë¥¼ ì§€ì •í•œë‹¤
 
 	m_pDlglmgResult = new CDlgImage;
 	m_pDlglmgResult->Create(IDD_DLGIMAGE, this);
 	m_pDlglmgResult->ShowWindow(SW_SHOW);  
 	m_pDlglmgResult->MoveWindow(640, 0, 640, 480);
 
-	return TRUE;  // Æ÷Ä¿½º¸¦ ÄÁÆ®·Ñ¿¡ ¼³Á¤ÇÏÁö ¾ÊÀ¸¸é TRUE¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
+	return TRUE;  // í¬ì»¤ìŠ¤ë¥¼ ì»¨íŠ¸ë¡¤ì— ì„¤ì •í•˜ì§€ ì•Šìœ¼ë©´ TRUEë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
 }
 
 void CgPrjDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -152,11 +155,11 @@ void CgPrjDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ±×¸®±â¸¦ À§ÇÑ µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ®ÀÔ´Ï´Ù.
+		CPaintDC dc(this); // ê·¸ë¦¬ê¸°ë¥¼ ìœ„í•œ ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸ì…ë‹ˆë‹¤.
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Å¬¶óÀÌ¾ğÆ® »ç°¢Çü¿¡¼­ ¾ÆÀÌÄÜÀ» °¡¿îµ¥¿¡ ¸ÂÃä´Ï´Ù.
+		// í´ë¼ì´ì–¸íŠ¸ ì‚¬ê°í˜•ì—ì„œ ì•„ì´ì½˜ì„ ê°€ìš´ë°ì— ë§ì¶¥ë‹ˆë‹¤.
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -164,7 +167,7 @@ void CgPrjDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// ¾ÆÀÌÄÜÀ» ±×¸³´Ï´Ù.
+		// ì•„ì´ì½˜ì„ ê·¸ë¦½ë‹ˆë‹¤.
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -173,19 +176,19 @@ void CgPrjDlg::OnPaint()
 	}
 }
 
-// »ç¿ëÀÚ°¡ ÃÖ¼ÒÈ­µÈ Ã¢À» ²ô´Â µ¿¾È¿¡ Ä¿¼­°¡ Ç¥½ÃµÇµµ·Ï ½Ã½ºÅÛ¿¡¼­
-//  ÀÌ ÇÔ¼ö¸¦ È£ÃâÇÕ´Ï´Ù.
+// ì‚¬ìš©ìê°€ ìµœì†Œí™”ëœ ì°½ì„ ë„ëŠ” ë™ì•ˆì— ì»¤ì„œê°€ í‘œì‹œë˜ë„ë¡ ì‹œìŠ¤í…œì—ì„œ
+//  ì´ í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 HCURSOR CgPrjDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CgPrjDlg::OnDestroy()         // WM_DESTROY ¸Ş¼¼Áö°¡ ÇØ´ç À©µµ¿ì¿¡ Àü´ŞµÇ¸é OnDestroy ÇÔ¼ö¸¦ È£ÃâÇÑ´Ù
-{                                  // Å¬·¡½º¸¶¹ı»ç > ¸Ş½ÃÁö > WM_DESTROY > Ãß°¡
+void CgPrjDlg::OnDestroy()         // WM_DESTROY ë©”ì„¸ì§€ê°€ í•´ë‹¹ ìœˆë„ìš°ì— ì „ë‹¬ë˜ë©´ OnDestroy í•¨ìˆ˜ë¥¼ í˜¸ì¶œí•œë‹¤
+{                                  // í´ë˜ìŠ¤ë§ˆë²•ì‚¬ > ë©”ì‹œì§€ > WM_DESTROY > ì¶”ê°€
 	CDialogEx::OnDestroy();
 
-	if(m_pDlgImage)		delete m_pDlgImage;      // new¸¦ »ç¿ëÇÏ¸é Ç×»ó delete ¸¦ ÇØÁÖ¾î¾ß ¸Ş¸ğ¸® ¸¯ÀÌ ¹ß»ıÇÏÁö ¾Ê´Â´Ù .
-	if(m_pDlglmgResult) delete m_pDlglmgResult;  // 2°³ÀÇ new¸¦ »ı¼ºÇß±â ¶§¹®¿¡ 2°³ÀÇ delete¸¦ ÇØÁÖ¾î¾ß ÇÑ´Ù
+	if(m_pDlgImage)		delete m_pDlgImage;      // newë¥¼ ì‚¬ìš©í•˜ë©´ í•­ìƒ delete ë¥¼ í•´ì£¼ì–´ì•¼ ë©”ëª¨ë¦¬ ë¦­ì´ ë°œìƒí•˜ì§€ ì•ŠëŠ”ë‹¤ .
+	if(m_pDlglmgResult) delete m_pDlglmgResult;  // 2ê°œì˜ newë¥¼ ìƒì„±í–ˆê¸° ë•Œë¬¸ì— 2ê°œì˜ deleteë¥¼ í•´ì£¼ì–´ì•¼ í•œë‹¤
 }
 
 
@@ -198,34 +201,34 @@ void CgPrjDlg::callFunc(int n)
 
 void CgPrjDlg::OnBnClickedBtnTest()
 {
-	unsigned char* fm = (unsigned char*)m_pDlgImage->m_image.GetBits();	  // unsigned = 0 ~ 255 (¾ç¼ö¸¸ Ç¥½Ã °¡´É, ÁÖ¼Ò°ªÀÇ °æ¿ì À½¼ö°¡ Á¸ÀçÇÏÁö ¾ÊÀ½ )
-															              // GetBits  = ÁöÁ¤µÈ ÇÈ¼¿ÀÇ ½ÇÁ¦ ºñÆ® °ª¿¡ ´ëÇÑ Æ÷ÀÎÅÍ¸¦ °Ë»ö. 
-															              //            ( m_imageÀÇ Ã¹¹øÂ° Æ÷ÀÎÅÍ¸¦ °¡Áö°í ¿È )
+	unsigned char* fm = (unsigned char*)m_pDlgImage->m_image.GetBits();	  // unsigned = 0 ~ 255 (ì–‘ìˆ˜ë§Œ í‘œì‹œ ê°€ëŠ¥, ì£¼ì†Œê°’ì˜ ê²½ìš° ìŒìˆ˜ê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŒ )
+															              // GetBits  = ì§€ì •ëœ í”½ì…€ì˜ ì‹¤ì œ ë¹„íŠ¸ ê°’ì— ëŒ€í•œ í¬ì¸í„°ë¥¼ ê²€ìƒ‰. 
+															              //            ( m_imageì˜ ì²«ë²ˆì§¸ í¬ì¸í„°ë¥¼ ê°€ì§€ê³  ì˜´ )
 
-	int nWidth = m_pDlgImage->m_image.GetWidth();     // ÁöÁ¤µÈ ÀÚÇ¥°ª È£Ãâ
-	int nHeight = m_pDlgImage->m_image.GetHeight();   // ÁöÁ¤µÈ ÀÚÇ¥°ª È£Ãâ
-	int nPitch = m_pDlgImage->m_image.GetPitch();     // ÁöÁ¤µÈ ÀÚÇ¥°ª È£Ãâ
+	int nWidth = m_pDlgImage->m_image.GetWidth();     // ì§€ì •ëœ ìí‘œê°’ í˜¸ì¶œ
+	int nHeight = m_pDlgImage->m_image.GetHeight();   // ì§€ì •ëœ ìí‘œê°’ í˜¸ì¶œ
+	int nPitch = m_pDlgImage->m_image.GetPitch();     // ì§€ì •ëœ ìí‘œê°’ í˜¸ì¶œ
 
-	memset(fm, 0x00, nWidth * nHeight);// memset ÇÔ¼ö´Â ¸Ş¸ğ¸®ÀÇ ³»¿ë(°ª)À» ¿øÇÏ´Â Å©±â¸¸Å­ Æ¯Á¤ °ªÀ¸·Î ¼¼ÆÃÇÒ ¼ö ÀÖ´Â ÇÔ¼ö
-									   // memory + setting ¸Ş¸ğ¸®¸¦ (Æ¯Á¤ °ªÀ¸·Î) ¼¼ÆÃ
-									   // void *ptr    = ÁÖ¼Ò¸¦ °¡¸®Å°°íÀÖ´Â Æ÷ÀÎÅÍ°¡ À§Ä¡ÇÏ´Â ÀÚ¸®
-									   // int value    = ¸Ş¸ğ¸®¿¡ ¼ÂÆÃÇÏ°íÀÚ ÇÏ´Â °ªÀ» ³ÖÀ¸¸é ‰Î
-									   // size_t _Size = ±æÀÌ ( ¹ÙÀÌÆ® ´ÜÀ§·Î½á ¸Ş¸ğ¸®ÀÇ Å©±â ÇÑÁ¶°¢ ´ÜÀ§ÀÇ ±æÀÌ¸¦ ¸»ÇÔ )
+	memset(fm, 0x00, nWidth * nHeight);// memset í•¨ìˆ˜ëŠ” ë©”ëª¨ë¦¬ì˜ ë‚´ìš©(ê°’)ì„ ì›í•˜ëŠ” í¬ê¸°ë§Œí¼ íŠ¹ì • ê°’ìœ¼ë¡œ ì„¸íŒ…í•  ìˆ˜ ìˆëŠ” í•¨ìˆ˜
+									   // memory + setting ë©”ëª¨ë¦¬ë¥¼ (íŠ¹ì • ê°’ìœ¼ë¡œ) ì„¸íŒ…
+									   // void *ptr    = ì£¼ì†Œë¥¼ ê°€ë¦¬í‚¤ê³ ìˆëŠ” í¬ì¸í„°ê°€ ìœ„ì¹˜í•˜ëŠ” ìë¦¬
+									   // int value    = ë©”ëª¨ë¦¬ì— ì…‹íŒ…í•˜ê³ ì í•˜ëŠ” ê°’ì„ ë„£ìœ¼ë©´ ëŒ
+									   // size_t _Size = ê¸¸ì´ ( ë°”ì´íŠ¸ ë‹¨ìœ„ë¡œì¨ ë©”ëª¨ë¦¬ì˜ í¬ê¸° í•œì¡°ê° ë‹¨ìœ„ì˜ ê¸¸ì´ë¥¼ ë§í•¨ )
 	
 
-	for (int k = 0; k < MAX_POINT; k++){    // È­¸é¿¡ 100°³ÀÇ ·£´ı Á¡ Ç¥½Ã.
-		int x = rand() % nWidth;      // rand(); = ·£´ıÇÑ ¼ıÀÚ¸¦ ¹İÈ¯ÇÑ´Ù . ¹İÈ¯°ªÀº ( 0 ~ 32767 ) »çÀÌÀÇ °ª
+	for (int k = 0; k < MAX_POINT; k++){    // í™”ë©´ì— 100ê°œì˜ ëœë¤ ì  í‘œì‹œ.
+		int x = rand() % nWidth;      // rand(); = ëœë¤í•œ ìˆ«ìë¥¼ ë°˜í™˜í•œë‹¤ . ë°˜í™˜ê°’ì€ ( 0 ~ 32767 ) ì‚¬ì´ì˜ ê°’
 		int y = rand() % nHeight;
 		fm[y * nPitch + x] = rand() % 0xff;
 	}
 
 	int nIndex = 0;
 	int nTh = 100;
-	for (int j = 0; j < nHeight; j++) {     // Á¡ °¹¼ö Ä«¿îÆÃ°ú °¢Á¡ÀÇ ÁÂÇ¥°ª Ç¥½ÃÇÏ±â.
+	for (int j = 0; j < nHeight; j++) {     // ì  ê°¯ìˆ˜ ì¹´ìš´íŒ…ê³¼ ê°ì ì˜ ì¢Œí‘œê°’ í‘œì‹œí•˜ê¸°.
 		for (int i = 0; i < nWidth; i++) {
 			if (fm[j*nPitch + i] > nTh) {
 				if (m_pDlglmgResult->m_nDataCount < MAX_POINT) {
-					cout << nIndex << ":" << i << "," << j << endl;
+				//	cout << nIndex << ":" << i << "," << j << endl;
 					m_pDlglmgResult->m_ptData[nIndex].x = i;
 					m_pDlglmgResult->m_ptData[nIndex].y = j;
 					m_pDlglmgResult->m_nDataCount = ++nIndex;
@@ -233,7 +236,32 @@ void CgPrjDlg::OnBnClickedBtnTest()
 			}
 		}
 	}
-	m_pDlgImage->Invalidate();  // Invalidate = CWndÀÇ ÀüÃ¼ Å¬¶óÀÌ¾ğÆ® ¿µ¿ªÀ» ¹«È¿È­ ½ÃÅ°´Â°Í
-								//              È­¸éÀÇ ¹è°æ»öÀ» Æ÷ÇÔÇØ¼­ ÀçÃâ·Â
+	m_pDlgImage->Invalidate();  // Invalidate = CWndì˜ ì „ì²´ í´ë¼ì´ì–¸íŠ¸ ì˜ì—­ì„ ë¬´íš¨í™” ì‹œí‚¤ëŠ”ê²ƒ
+								//              í™”ë©´ì˜ ë°°ê²½ìƒ‰ì„ í¬í•¨í•´ì„œ ì¬ì¶œë ¥
 	m_pDlglmgResult->Invalidate();
 }
+
+
+void CgPrjDlg::OnBnClickedBtnProcess()
+{
+	CProcess process; // ê°ì²´ìƒì„±
+
+	auto start = std::chrono::system_clock::now();              // auto = ì´ˆê¹ƒê°’ì˜ í˜•ì‹ì— ë§ì¶° ì„ ì–¸í•˜ëŠ” ì¸ìŠ¤í„´ìŠ¤(ë³€ìˆ˜)ì˜ í˜•ì‹ì´ 'ìë™'ìœ¼ë¡œ ê²°ì •ë¨.            
+											                    // system_clock::now() = ì‹¤í–‰ë˜ëŠ” ìˆœê°„ì˜ ì‹œìŠ¤í…œ ì‹œê°„ ê°’
+
+	int nRet = process.getStarInfo(&m_pDlgImage->m_image, 10);  // m_imageì˜ ê°œì²´ìˆ˜ ê°’ ( ë°ê¸°ê°€ 100ë³´ë‹¤ í°ê°’ì˜ ê°¯ìˆ˜ )
+
+	auto end = std::chrono::system_clock::now();                // system_clock::now() = ì‹¤í–‰ë˜ëŠ” ìˆœê°„ì˜ ì‹œìŠ¤í…œ ì‹œê°„ ê°’
+
+	auto millisec = std::chrono::duration_cast<std::chrono::milliseconds>(end - start); // duration_cast = chrono ì—ì„œ ê²½ê³¼ì‹œê°„ì„ ë‚˜íƒ€ë‚´ëŠ” í´ë˜ìŠ¤
+	// durationì€ 6ê°œì˜ ì‹œê°„ ë‹¨ìœ„ë¥¼ ì§€ì›
+	// std::chrono::nanosecondsÂ  =Â 10ì–µë¶„ì˜Â 1ì´ˆ
+	// std::chrono::microseconds =Â 100ë§Œë¶„ì˜Â 1ì´ˆ
+	// std::chrono::milliseconds = 1000ë¶„ì˜ 1ì´ˆ
+	// std::chrono::seconds       = ì´ˆ
+	// std::chrono::minutes       = ë¶„
+	// std::chrono::hours         = ì‹œ
+
+	cout << nRet << "\t" << millisec.count() << "ms" << endl;
+}
+	

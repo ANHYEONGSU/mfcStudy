@@ -123,7 +123,7 @@ void CDlgImage::drawDate(CDC* pDC)
 				 // int b = bottom의 위치를 지정
 
 	CPen pen;			                            // CPen = Windows 디바이스 컨텍스트에서 선을 그리는 도구
-	pen.CreatePen(PS_SOLID, 5, COLOR_BLUE);    // int nPenStyle    = 펜의 스타일을 지정한다
+	pen.CreatePen(PS_SOLID, 2, COLOR_BLUE);    // int nPenStyle    = 펜의 스타일을 지정한다
 	// PS_SOLID   = 실선 펜							// int nWidth       = 펜의 너비를 지정한다
 	// PS_DASH    = 파선 펜                         // COLORREF crColor = 펜의 RGB 색을 포함한다
 	// PS_DOT     = 점선 펜 
@@ -135,7 +135,7 @@ void CDlgImage::drawDate(CDC* pDC)
 		rect.SetRect(m_ptData[i], m_ptData[i]);     // POINT topLeft     = 포인터의 사각형 왼쪽 위 모퉁이 위치
 													// POINT bottomRight = 포인터의 사각형 오른쪽 아래 모퉁이 위치
 
-		rect.InflateRect(2, 2);						// InflateRect() = CRect 측면의 중심에서 멀리 이동하여 확장한다
+		rect.InflateRect(1, 2);						// InflateRect() = CRect 측면의 중심에서 멀리 이동하여 확장한다
 													// int x         = x의 왼쪽과 오른쪽을 팽창할 단위수를 지정함
 		                                            // int y         = y의 위쪽과 아래쪽을 팽창할 단위수를 지정함
 
