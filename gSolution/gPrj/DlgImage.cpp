@@ -57,7 +57,7 @@ BOOL CDlgImage::OnInitDialog() // 애플리케이션이 입력 포커스를 대화 상자의 컨트�
 									// int nWidth = 너비를 지정한다
 									// int Height = 높이를 지정한다
 									// 윈도우 고정 = 리소스뷰 > 다이얼로그> 속성 > Title Bar > False 
-	InitImage();
+	InitImage(); 
 
 
 
@@ -112,16 +112,36 @@ void CDlgImage::OnPaint() // CPaintDC 클래스의 디바이스 컨텍스트 개체를 만들어 �
 	drawDate(&dc);
 }
 
+
 void CDlgImage::drawDate(CDC* pDC)
 {
-	CRect rect;
-	CPen pen;
-	pen.CreatePen(PS_SOLID, 5, RGB(0xff, 0, 0));
+	CRect rect;  // CRect = 사각형의 좌측 상단과 우측 하단의 조표를 저장.
+				 // CRect (int l, int t, int r, int b)
+				 // int l = left  의 위치를 지정
+			     // int t = top   의 위치를 지정
+				 // int r = right 의 위치를 지정
+				 // int b = bottom의 위치를 지정
+
+	CPen pen;			                            // CPen = Windows 디바이스 컨텍스트에서 선을 그리는 도구
+	pen.CreatePen(PS_SOLID, 5, COLOR_BLUE);    // int nPenStyle    = 펜의 스타일을 지정한다
+	// PS_SOLID   = 실선 펜							// int nWidth       = 펜의 너비를 지정한다
+	// PS_DASH    = 파선 펜                         // COLORREF crColor = 펜의 RGB 색을 포함한다
+	// PS_DOT     = 점선 펜 
+	// PS_DASHDOT = 대시와 점이 번갈아가는 팬
+
 	CPen* pOldPen = pDC->SelectObject(&pen);
+
 	for (int i = 0; i < m_nDataCount; i++) {
-		rect.SetRect(m_ptData[i], m_ptData[i]);
-		rect.InflateRect(2, 2);
-		pDC->Ellipse(rect);
+		rect.SetRect(m_ptData[i], m_ptData[i]);     // POINT topLeft     = 포인터의 사각형 왼쪽 위 모퉁이 위치
+													// POINT bottomRight = 포인터의 사각형 오른쪽 아래 모퉁이 위치
+
+		rect.InflateRect(2, 2);						// InflateRect() = CRect 측면의 중심에서 멀리 이동하여 확장한다
+													// int x         = x의 왼쪽과 오른쪽을 팽창할 단위수를 지정함
+		                                            // int y         = y의 위쪽과 아래쪽을 팽창할 단위수를 지정함
+
+		pDC->Ellipse(rect);                         // Ellipsed()     = 사각형에 내접한 타원그리기
+		                                            //                  타원의 중심이 지정된 경계사각형의 중심이다
+													// LPCRECT lpRect = 타원의 경계 사각형을 지정함
 	}
 	pDC->SelectObject(pOldPen);
 }

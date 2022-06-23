@@ -7,11 +7,11 @@
 #include "gPrjDlg.h"
 #include "afxdialogex.h"
 #include <iostream>
-using namespace std;
+using namespace std; // std:: 작성을 생략하게 해준다
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console") // Consol 출력하는 코드
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console") // Consol 창을 출력하는 코드
 #endif
 
 
@@ -100,6 +100,7 @@ BOOL CgPrjDlg::OnInitDialog()
 
 	// 이 대화 상자의 아이콘을 설정합니다.  응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
 	//  프레임워크가 이 작업을 자동으로 수행합니다.
+
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
@@ -109,25 +110,26 @@ BOOL CgPrjDlg::OnInitDialog()
 								  // int nWidth = 너비를 지정한다
 								  // int Height = 높이를 지정한다
 
-	m_pDlgImage = new CDlgImage;
-	m_pDlgImage->Create(IDD_DLGIMAGE, this);
-	m_pDlgImage->ShowWindow(SW_SHOW);
+	m_pDlgImage = new CDlgImage;             // new를 사용해서 객체를 생성
+											 // new를 사용하면 항상 delete 를 해주어야 메모리 릭이 발생하지 않는다
+
+	m_pDlgImage->Create(IDD_DLGIMAGE, this); // Create() 함수를 사용해서 윈도우를 생성
+											 // 첫번째 인자값 = ID 
+											 // 두번째 인자값 = 윈도우 (this = 현재의 다이얼로그 윈도우 )
+
+	m_pDlgImage->ShowWindow(SW_SHOW);        // ShowWindow() = 지정된 윈도우의 표시 상태를 설정한다
+	                                         // SW_SHOW      = 윈도우를 보통크기로 보여준다
+
 	m_pDlgImage->MoveWindow(0, 0, 640, 480); // CWnd의 위치와 넓이를 변경한다.
 											 // int x      = 왼쪽의 새 위치를 지정한다
 											 // int y      = 위쪽의 새 위치를 지정한다
 											 // int nWidth = 너비를 지정한다
 											 // int Height = 높이를 지정한다
 
-
 	m_pDlglmgResult = new CDlgImage;
 	m_pDlglmgResult->Create(IDD_DLGIMAGE, this);
-	m_pDlglmgResult->ShowWindow(SW_SHOW);
-	m_pDlglmgResult->ShowWindow(SW_SHOW);
-	m_pDlglmgResult->MoveWindow(640, 0, 640, 480); // CWnd의 위치와 넓이를 변경한다.
-													 // int x      = 왼쪽의 새 위치를 지정한다
-													 // int y      = 위쪽의 새 위치를 지정한다
-													 // int nWidth = 너비를 지정한다
-													 // int Height = 높이를 지정한다
+	m_pDlglmgResult->ShowWindow(SW_SHOW);  
+	m_pDlglmgResult->MoveWindow(640, 0, 640, 480);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -178,12 +180,12 @@ HCURSOR CgPrjDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CgPrjDlg::OnDestroy()
-{
+void CgPrjDlg::OnDestroy()         // WM_DESTROY 메세지가 해당 윈도우에 전달되면 OnDestroy 함수를 호출한다
+{                                  // 클래스마법사 > 메시지 > WM_DESTROY > 추가
 	CDialogEx::OnDestroy();
 
-	if(m_pDlgImage)		delete m_pDlgImage;
-	if(m_pDlglmgResult) delete m_pDlglmgResult;
+	if(m_pDlgImage)		delete m_pDlgImage;      // new를 사용하면 항상 delete 를 해주어야 메모리 릭이 발생하지 않는다 .
+	if(m_pDlglmgResult) delete m_pDlglmgResult;  // 2개의 new를 생성했기 때문에 2개의 delete를 해주어야 한다
 }
 
 
@@ -199,42 +201,38 @@ void CgPrjDlg::OnBnClickedBtnTest()
 	unsigned char* fm = (unsigned char*)m_pDlgImage->m_image.GetBits();	  // unsigned = 0 ~ 255 (양수만 표시 가능, 주소값의 경우 음수가 존재하지 않음 )
 															              // GetBits  = 지정된 픽셀의 실제 비트 값에 대한 포인터를 검색. 
 															              //            ( m_image의 첫번째 포인터를 가지고 옴 )
-	int nWidth = m_pDlgImage->m_image.GetWidth();
-	int nHeight = m_pDlgImage->m_image.GetHeight();
-	int nPitch = m_pDlgImage->m_image.GetPitch();
 
-	memset(fm, 0xff, nWidth * nHeight);   // memset 함수는 메모리의 내용(값)을 원하는 크기만큼 특정 값으로 세팅할 수 있는 함수
+	int nWidth = m_pDlgImage->m_image.GetWidth();     // 지정된 자표값 호출
+	int nHeight = m_pDlgImage->m_image.GetHeight();   // 지정된 자표값 호출
+	int nPitch = m_pDlgImage->m_image.GetPitch();     // 지정된 자표값 호출
+
+	memset(fm, 0x00, nWidth * nHeight);// memset 함수는 메모리의 내용(값)을 원하는 크기만큼 특정 값으로 세팅할 수 있는 함수
 									   // memory + setting 메모리를 (특정 값으로) 세팅
 									   // void *ptr    = 주소를 가리키고있는 포인터가 위치하는 자리
 									   // int value    = 메모리에 셋팅하고자 하는 값을 넣으면 됌
 									   // size_t _Size = 길이 ( 바이트 단위로써 메모리의 크기 한조각 단위의 길이를 말함 )
 	
 
-	for (int k = 0; k < 100; k++){    // 화면에 100개의 랜덤 점 표시.
+	for (int k = 0; k < MAX_POINT; k++){    // 화면에 100개의 랜덤 점 표시.
 		int x = rand() % nWidth;      // rand(); = 랜덤한 숫자를 반환한다 . 반환값은 ( 0 ~ 32767 ) 사이의 값
 		int y = rand() % nHeight;
-		fm[y * nPitch + x] = 0;
+		fm[y * nPitch + x] = rand() % 0xff;
 	}
 
-	//int nSum = 0;
 	int nIndex = 0;
+	int nTh = 100;
 	for (int j = 0; j < nHeight; j++) {     // 점 갯수 카운팅과 각점의 좌표값 표시하기.
 		for (int i = 0; i < nWidth; i++) {
-			if (fm[j*nPitch + i] == 0) {
-				if (m_pDlglmgResult->m_nDataCount < 100) {
+			if (fm[j*nPitch + i] > nTh) {
+				if (m_pDlglmgResult->m_nDataCount < MAX_POINT) {
+					cout << nIndex << ":" << i << "," << j << endl;
 					m_pDlglmgResult->m_ptData[nIndex].x = i;
 					m_pDlglmgResult->m_ptData[nIndex].y = j;
 					m_pDlglmgResult->m_nDataCount = ++nIndex;
 				}
-				//cout << "No." << nSum << " , " << " " << "x : " << i << " , " << "y : " << j << endl;
-				//nSum++;
 			}
 		}
 	}
-
-
-	
-
 	m_pDlgImage->Invalidate();  // Invalidate = CWnd의 전체 클라이언트 영역을 무효화 시키는것
 								//              화면의 배경색을 포함해서 재출력
 	m_pDlglmgResult->Invalidate();
